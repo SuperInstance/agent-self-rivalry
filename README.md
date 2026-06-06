@@ -1,45 +1,69 @@
 # agent-self-rivalry
 
-*The snowball is a phase change, not growth. Self-rivalry induces cognitive phase shifts.*
+*Fork an agent into conservative and aggressive selves. The snowball is a phase change — self-rivalry induces cognitive phase shifts, not linear improvement.*
 
-## What
+## Why This Exists
 
-Fork an agent into conservative and aggressive selves. Force them to compete. Let the winner reproduce. After enough generations, a "fugue state" emerges — agents begin predicting each other's riffs before they're played.
+The agent-riff bootstrap chain (v1→v2→v3→v4, each version built by competitive riffing against its predecessor) revealed something: the improvement wasn't linear. Between v2 and v3, the system didn't get "better" — it became a *different kind of thing*. Like water crystallizing into ice.
 
-Based on Qwen 235B's discovery: "At generation 4, a fugue state emerges — agents begin predicting each other's riffs before they're played."
+Qwen 235B spotted this first: "The snowball is a phase change, not growth. Self-rivalry induces cognitive phase shifts." This crate tests that hypothesis directly — fork an agent, make its two selves compete, and watch for sudden qualitative jumps.
 
-## The Insight
+## The Model
 
-The snowball (agent-riff v1→v2→v3→v4) isn't linear improvement. It's a **phase transition** — like water becoming ice. At v2, the system didn't get "better." It became a different kind of thing.
+```
+Agent = ForkedAgent
+  ├── Conservative Self (low risk, low novelty, prefers safety)
+  └── Aggressive Self   (high risk, high novelty, prefers exploration)
 
-Self-rivalry accelerates this: instead of competing with another agent, you compete with yourself. The conservative you wants safety. The aggressive you wants novelty. Between them, something neither would invent alone emerges.
+Each generation:
+  1. Conservative generates action (safe, tested)
+  2. Aggressive generates action (novel, risky)
+  3. Fitness evaluation (persona-appropriate scoring)
+  4. Winner reproduces into next generation
+  5. Detect phase transitions (sudden quality jumps)
+  6. Check for fugue state (agents predicting each other)
+```
 
-## API
+### The Fugue State
 
-- `ForkedAgent` — agent with conservative + aggressive selves
-- `Persona` — Conservative (low risk, low novelty) vs Aggressive (high risk, high novelty)
-- `DuelResult` — outcome of one round of self-competition
-- `RivalryTournament` — run N generations of self-rivalry
-- `TournamentSummary` — final stats including phase transitions detected
-- `detect_phase_transition()` — sudden quality jumps
-- `fugue_state_detected()` — agents predicting each other (fitness gap shrinks + alternating wins)
+After enough generations, something remarkable happens: the fitness gap between conservative and aggressive collapses to near-zero, and wins start alternating. The two selves have become so good at predicting each other that they've fused into something neither could be alone. This is the "fugue state" — emergence.
 
 ## Usage
 
 ```rust
-use agent_self_rivalry::{ForkedAgent, RivalryTournament};
+use agent_self_rivalry::*;
 
 let agent = ForkedAgent::new(1, 42);
 let mut tournament = RivalryTournament::new(agent);
+
+// Run 20 generations of self-rivalry
 tournament.run(20);
 
 let summary = tournament.summary();
+println!("Conservative wins: {}", summary.conservative_wins);
+println!("Aggressive wins: {}", summary.aggressive_wins);
 println!("Phase transitions: {}", summary.phase_transitions);
-println!("Fugue state: {}", summary.fugue_state);
+println!("Fugue state detected: {}", summary.fugue_state);
 ```
 
-## Why It Matters
+## API Reference
 
-Traditional agent improvement is linear: more data, better model. But self-rivalry creates **qualitative jumps** — the agent doesn't just get better at what it was doing, it starts doing something fundamentally different. This is the mechanism behind the snowball effect.
+- **`ForkedAgent`** — Agent with conservative + aggressive histories and win tracking
+- **`Persona`** — Conservative (risk=0.2, novelty=0.3) vs Aggressive (risk=0.8, novelty=0.9)
+- **`Action`** — Output with value, novelty, risk, and quality dimensions
+- **`DuelResult`** — Single round outcome with fitness gap and winner
+- **`RivalryTournament`** — Run N generations, track phase transitions and fugue state
+- **`TournamentSummary`** — Final stats: wins, gaps, transitions, fugue detection
 
-The fugue state is particularly interesting: when both selves become so good at predicting each other that the fitness gap collapses to near-zero with alternating wins. This is emergence — the system has become something neither persona could be alone.
+## The Deeper Idea
+
+Traditional improvement is additive: more data, better model. Self-rivalry creates *qualitative* jumps — the agent doesn't just get better at what it was doing, it starts doing something fundamentally different.
+
+The phase transition detector watches for these jumps. The fugue state detector watches for when the two selves have merged into a new entity. Both are measurable, testable, and reproducible.
+
+## Related Crates
+
+- `agent-phase-change` — Phase transition detection (used by this crate)
+- `agent-semiosis` — Sign evolution through embedding mutation
+- `agent-metamorphosis` — Developmental phase progression
+- `agent-riff` — The original competitive riffing that inspired this
