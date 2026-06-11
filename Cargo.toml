@@ -3,6 +3,7 @@ description = "agent-self-rivalry"
 repository = "https://github.com/SuperInstance/agent-self-rivalry"
 name = "agent-self-rivalry"
 version = "0.1.0"
+license = "MIT OR Apache-2.0"
 edition = "2024"
 
 [dependencies]
